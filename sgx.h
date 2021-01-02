@@ -184,6 +184,7 @@ struct sgx_encl {
 	struct list_head all_list;
 	struct mmu_notifier mmu_notifier;
 	unsigned int shadow_epoch;
+  atomic_t va_pages_cnt;
 };
 
 struct sgx_epc_bank {

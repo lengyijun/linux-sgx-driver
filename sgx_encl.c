@@ -499,6 +499,7 @@ int sgx_init_page(struct sgx_encl *encl, struct sgx_encl_page *entry,
 		}
 
 		atomic_inc(&sgx_va_pages_cnt);
+		atomic_inc(&encl->va_pages_cnt);
 
 		va_page->epc_page = epc_page;
 		va_offset = sgx_alloc_va_slot(va_page);
@@ -578,6 +579,7 @@ static struct sgx_encl *sgx_encl_alloc(struct sgx_secs *secs)
 	encl->ssaframesize = secs->ssaframesize;
 	encl->backing = backing;
 	encl->pcmd = pcmd;
+  atomic_set(&encl->va_pages_cnt,0);
 
 	return encl;
 }
@@ -1017,6 +1019,7 @@ void sgx_encl_release(struct kref *ref)
 		sgx_free_page(va_page->epc_page, encl);
 		kfree(va_page);
 		atomic_dec(&sgx_va_pages_cnt);
+		atomic_dec(&encl->va_pages_cnt);
 	}
 
 	if (encl->secs.epc_page)
@@ -1056,12 +1059,14 @@ int sgx_encl_seq_show(struct seq_file *file, void *v)
 {
 	struct sgx_encl *encl= list_entry(v, struct sgx_encl, all_list);
 
-	seq_printf(file, "%d %u %lu %lu %u\n",
+	seq_printf(file, "%d %u %lu %lu %u %d\n",
 		   pid_nr(encl->tgid_ctx->tgid),
 		   encl->id,
 		   encl->size,
 		   encl->eadd_cnt,
-		   encl->secs_child_cnt);
+		   encl->secs_child_cnt,
+       atomic_read(&encl->va_pages_cnt)
+       );
 	return(0);
 }
 #endif
