@@ -71,6 +71,11 @@
 #include <linux/kthread.h>
 #include <linux/platform_device.h>
 
+#include <linux/version.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,6,0)
+#include <linux/proc_fs.h>
+#endif
+
 #define DRV_DESCRIPTION "Intel SGX Driver"
 #define DRV_VERSION "2.11.0"
 
@@ -174,6 +179,14 @@ static int sgx_stats_open(struct inode *inode, struct file *file)
 	return single_open(file, sgx_stats_read, NULL);
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,6,0)
+static struct proc_ops sgx_stats_ops = {
+	.proc_open = sgx_stats_open,
+	.proc_read = seq_read,
+	.proc_lseek = seq_lseek,
+	.proc_release = single_release
+};
+#else
 static struct file_operations sgx_stats_ops = {
 	.owner = THIS_MODULE,
 	.open = sgx_stats_open,
@@ -181,6 +194,7 @@ static struct file_operations sgx_stats_ops = {
 	.llseek = seq_lseek,
 	.release = single_release
 };
+#endif
 
 static struct seq_operations sgx_encl_seq_ops = {
 	.start = sgx_encl_seq_start,
@@ -194,6 +208,14 @@ static int sgx_encl_open(struct inode *inode, struct file *file)
 	return seq_open(file, &sgx_encl_seq_ops);
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,6,0)
+static struct proc_ops sgx_encl_ops = {
+	.proc_open = sgx_encl_open,
+	.proc_read = seq_read,
+	.proc_lseek = seq_lseek,
+	.proc_release = seq_release
+};
+#else
 static struct file_operations sgx_encl_ops = {
 	.owner = THIS_MODULE,
 	.open = sgx_encl_open,
@@ -201,6 +223,8 @@ static struct file_operations sgx_encl_ops = {
 	.llseek = seq_lseek,
 	.release = seq_release
 };
+#endif
+
 #endif
 
 static int sgx_pm_suspend(struct device *dev)
