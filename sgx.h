@@ -133,6 +133,7 @@ enum sgx_encl_page_flags {
 	SGX_ENCL_PAGE_RESERVED	= BIT(1),
 	SGX_ENCL_PAGE_TRIM	= BIT(2),
 	SGX_ENCL_PAGE_ADDED	= BIT(3),
+	SGX_ENCL_PAGE_LOCK = BIT(4),
 };
 
 struct sgx_encl_page {

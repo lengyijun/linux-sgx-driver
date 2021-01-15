@@ -228,7 +228,8 @@ static void sgx_isolate_pages(struct sgx_encl *encl,
 					 list);
 
 		if (!sgx_test_and_clear_young(entry->encl_page, encl) &&
-		    !(entry->encl_page->flags & SGX_ENCL_PAGE_RESERVED)) {
+		    !(entry->encl_page->flags & SGX_ENCL_PAGE_RESERVED) &&
+		    !(entry->encl_page->flags & SGX_ENCL_PAGE_LOCK) ) {
 			entry->encl_page->flags |= SGX_ENCL_PAGE_RESERVED;
 			list_move_tail(&entry->list, dst);
 		} else {

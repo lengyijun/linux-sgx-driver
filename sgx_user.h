@@ -79,6 +79,8 @@
 	_IOW(SGX_MAGIC, 0x0c, struct sgx_range)
 #define SGX_IOC_ENCLAVE_PAGE_REMOVE \
 	_IOW(SGX_MAGIC, 0x0d, unsigned long)
+#define SGX_IOC_ENCLAVE_PAGE_MLOCK \
+	_IOW(SGX_MAGIC, 0x0e, struct sgx_mlock_param)
 
 /* SGX leaf instruction return values */
 #define SGX_SUCCESS			0
@@ -160,5 +162,10 @@ struct sgx_modification_param {
 	struct sgx_range range;
 	unsigned long flags;
 };
+
+struct sgx_mlock_param {
+  __u64   start_addr;  // start address
+  __u64   size;  // end=start+size
+} __attribute__((__packed__));
 
 #endif /* _UAPI_ASM_X86_SGX_H */
