@@ -81,6 +81,8 @@
 	_IOW(SGX_MAGIC, 0x0d, unsigned long)
 #define SGX_IOC_ENCLAVE_PAGE_MLOCK \
 	_IOW(SGX_MAGIC, 0x0e, struct sgx_mlock_param)
+#define SGX_IOC_ENCLAVE_PAGE_MUNLOCK \
+	_IOW(SGX_MAGIC, 0x10, struct sgx_munlock_param)
 
 /* SGX leaf instruction return values */
 #define SGX_SUCCESS			0
@@ -167,5 +169,12 @@ struct sgx_mlock_param {
   __u64   start_addr;  // start address
   __u64   size;  // end=start+size
 } __attribute__((__packed__));
+
+struct sgx_munlock_param {
+  __u64   start_addr;  // start address
+  __u64   size;  // end=start+size
+} __attribute__((__packed__));
+
+//typedef struct sgx_mlock_param sgx_munlock_param;
 
 #endif /* _UAPI_ASM_X86_SGX_H */

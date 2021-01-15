@@ -408,6 +408,37 @@ long sgx_ioc_page_mlock(struct file *filep, unsigned int cmd,
   return 0;
 }
 
+long sgx_ioc_page_munlock(struct file *filep, unsigned int cmd,
+			 unsigned long arg)
+{
+	struct sgx_encl *encl;
+	struct sgx_munlock_param *smp;
+	struct sgx_encl_page *entry;
+  unsigned long end;
+  unsigned long address;
+
+  smp= (struct sgx_munlock_param *) arg;
+  address=smp->start_addr;
+  end=address+smp->size;
+
+	if (sgx_get_encl(address, &encl)) {
+		pr_warn("sgx: No enclave found at start address 0x%lx\n",
+			address);
+		return -EINVAL;
+	}
+
+	for (; address < end; address += PAGE_SIZE) {
+    entry = radix_tree_lookup(&encl->page_tree, address >> PAGE_SHIFT);
+    if(!entry){
+      //todo another return value
+      return -EINVAL;
+    }
+    entry->flags &= (~SGX_ENCL_PAGE_LOCK);
+  }
+
+  return 0;
+}
+
 typedef long (*sgx_ioc_t)(struct file *filep, unsigned int cmd,
 			  unsigned long arg);
 
@@ -444,6 +475,9 @@ long sgx_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
 		break;
 	case SGX_IOC_ENCLAVE_PAGE_MLOCK:
 		handler = sgx_ioc_page_mlock;
+		break;
+	case SGX_IOC_ENCLAVE_PAGE_MUNLOCK:
+		handler = sgx_ioc_page_munlock;
 		break;
 	default:
 		return -ENOIOCTLCMD;
