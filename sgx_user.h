@@ -83,6 +83,8 @@
 	_IOW(SGX_MAGIC, 0x0e, struct sgx_mlock_param)
 #define SGX_IOC_ENCLAVE_PAGE_MUNLOCK \
 	_IOW(SGX_MAGIC, 0x10, struct sgx_munlock_param)
+#define SGX_IOC_ENCLAVE_PAGE_MINCORE \
+	_IOW(SGX_MAGIC, 0x10, unsigned long)
 
 /* SGX leaf instruction return values */
 #define SGX_SUCCESS			0
