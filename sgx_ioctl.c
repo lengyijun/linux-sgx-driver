@@ -381,14 +381,14 @@ long sgx_ioc_page_mlock(struct file *filep, unsigned int cmd,
 			 unsigned long arg)
 {
 	struct sgx_encl *encl;
-	struct sgx_mlock_param *smp;
+	struct sgx_range *rg;
 	struct sgx_encl_page *entry;
-  unsigned long end;
-  unsigned long address;
+	unsigned long end;
+	unsigned long address;
 
-  smp= (struct sgx_mlock_param *) arg;
-  address=smp->start_addr;
-  end=address+smp->size;
+	rg= (struct sgx_range*) arg;
+	address=rg->start_addr;
+	end=address+rg->nr_pages*PAGE_SIZE;
 
 	if (sgx_get_encl(address, &encl)) {
 		pr_warn("sgx: No enclave found at start address 0x%lx\n",
@@ -397,12 +397,12 @@ long sgx_ioc_page_mlock(struct file *filep, unsigned int cmd,
 	}
 
 	for (; address < end; address += PAGE_SIZE) {
-    entry = radix_tree_lookup(&encl->page_tree, address >> PAGE_SHIFT);
-    if(!entry){
-      return -6;
-    }
-    entry->flags |= SGX_ENCL_PAGE_LOCK;
-  }
+		entry = radix_tree_lookup(&encl->page_tree, address >> PAGE_SHIFT);
+		if(!entry){
+		return -6;
+		}
+		entry->flags |= SGX_ENCL_PAGE_LOCK;
+	}
 
   return 0;
 }
@@ -411,14 +411,14 @@ long sgx_ioc_page_munlock(struct file *filep, unsigned int cmd,
 			 unsigned long arg)
 {
 	struct sgx_encl *encl;
-	struct sgx_munlock_param *smp;
+	struct sgx_range* rg;
 	struct sgx_encl_page *entry;
-  unsigned long end;
-  unsigned long address;
+	unsigned long end;
+	unsigned long address;
 
-  smp= (struct sgx_munlock_param *) arg;
-  address=smp->start_addr;
-  end=address+smp->size;
+	rg= (struct sgx_range*) arg;
+	address=rg->start_addr;
+	end=address+rg->nr_pages * PAGE_SIZE;
 
 	if (sgx_get_encl(address, &encl)) {
 		pr_warn("sgx: No enclave found at start address 0x%lx\n",
@@ -427,14 +427,14 @@ long sgx_ioc_page_munlock(struct file *filep, unsigned int cmd,
 	}
 
 	for (; address < end; address += PAGE_SIZE) {
-    entry = radix_tree_lookup(&encl->page_tree, address >> PAGE_SHIFT);
-    if(!entry){
-      return -6;
-    }
-    entry->flags &= (~SGX_ENCL_PAGE_LOCK);
-  }
+		entry = radix_tree_lookup(&encl->page_tree, address >> PAGE_SHIFT);
+		if(!entry){
+		return -6;
+		}
+		entry->flags &= (~SGX_ENCL_PAGE_LOCK);
+	}
 
-  return 0;
+	return 0;
 }
 
 // 0:   in EPC
@@ -446,9 +446,9 @@ long sgx_ioc_page_mincore(struct file *filep, unsigned int cmd,
 {
 	struct sgx_encl *encl;
 	struct sgx_encl_page *entry;
-  unsigned long address;
+	unsigned long address;
 
-  address= (*(unsigned long*) arg);
+	address= (*(unsigned long*) arg);
 
 	if (sgx_get_encl(address, &encl)) {
 		pr_warn("sgx: No enclave found at start address 0x%lx\n",
@@ -456,15 +456,15 @@ long sgx_ioc_page_mincore(struct file *filep, unsigned int cmd,
 		return -22;
 	}
 
-  entry = radix_tree_lookup(&encl->page_tree, address >> PAGE_SHIFT);
-  if(!entry){
-    return -6;
-  }
+	entry = radix_tree_lookup(&encl->page_tree, address >> PAGE_SHIFT);
+	if(!entry){
+		return -6;
+	}
 
-  if(entry->epc_page){
-    return 0;
-  }
-  return 1;
+	if(entry->epc_page){
+		return 0;
+	}
+	return 1;
 
 }
 

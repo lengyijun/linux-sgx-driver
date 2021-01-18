@@ -80,9 +80,9 @@
 #define SGX_IOC_ENCLAVE_PAGE_REMOVE \
 	_IOW(SGX_MAGIC, 0x0d, unsigned long)
 #define SGX_IOC_ENCLAVE_PAGE_MLOCK \
-	_IOW(SGX_MAGIC, 0x0e, struct sgx_mlock_param)
+	_IOW(SGX_MAGIC, 0x0e, struct sgx_range)
 #define SGX_IOC_ENCLAVE_PAGE_MUNLOCK \
-	_IOW(SGX_MAGIC, 0x10, struct sgx_munlock_param)
+	_IOW(SGX_MAGIC, 0x10, struct sgx_range)
 #define SGX_IOC_ENCLAVE_PAGE_MINCORE \
 	_IOW(SGX_MAGIC, 0x10, unsigned long)
 
@@ -166,16 +166,6 @@ struct sgx_modification_param {
 	struct sgx_range range;
 	unsigned long flags;
 };
-
-struct sgx_mlock_param {
-  __u64   start_addr;  // start address
-  __u64   size;  // end=start+size
-} __attribute__((__packed__));
-
-struct sgx_munlock_param {
-  __u64   start_addr;  // start address
-  __u64   size;  // end=start+size
-} __attribute__((__packed__));
 
 //typedef struct sgx_mlock_param sgx_munlock_param;
 
