@@ -208,7 +208,6 @@ extern bool sgx_has_sgx2;
 /* stats */
 extern unsigned int sgx_encl_created;
 extern unsigned int sgx_encl_released;
-extern long unsigned sgx_retired_eadd_cnt;
 
 extern const struct vm_operations_struct sgx_vm_ops;
 

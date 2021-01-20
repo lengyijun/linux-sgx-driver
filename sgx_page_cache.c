@@ -598,10 +598,9 @@ void sgx_put_page(void *epc_page_vaddr)
 #ifdef CONFIG_PROC_FS
 int sgx_stats_read(struct seq_file *file, void *v)
 {
-	seq_printf(file, "%u %u %lu %lu %lu %u %u %u\n",
+	seq_printf(file, "%u %u %lu %lu %u %u %u\n",
 		   sgx_encl_created,
 		   sgx_encl_released,
-		   sgx_retired_eadd_cnt,
 		   sgx_pages_alloced,
 		   sgx_pages_freed,
 		   sgx_nr_total_epc_pages,

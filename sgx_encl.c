@@ -84,7 +84,6 @@ struct sgx_add_page_req {
 
 unsigned int sgx_encl_created;
 unsigned int sgx_encl_released;
-unsigned long sgx_retired_eadd_cnt;
 
 /**
  * sgx_encl_find - find an enclave
@@ -993,7 +992,6 @@ void sgx_encl_release(struct kref *ref)
 
 	mutex_lock(&sgx_tgid_ctx_mutex);
 	sgx_encl_released++;
-	sgx_retired_eadd_cnt += encl->eadd_cnt;
 	if (!list_empty(&encl->encl_list))
 		list_del(&encl->encl_list);
 	list_del(&encl->all_list);
