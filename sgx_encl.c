@@ -1057,13 +1057,14 @@ int sgx_encl_seq_show(struct seq_file *file, void *v)
 {
 	struct sgx_encl *encl= list_entry(v, struct sgx_encl, all_list);
 
-	seq_printf(file, "%d %u %lu %lu %u %d\n",
+	seq_printf(file, "%d %u %lu %lu %u %d %d\n",
 		   pid_nr(encl->tgid_ctx->tgid),
 		   encl->id,
 		   encl->size,
 		   encl->eadd_cnt,
 		   encl->secs_child_cnt,
-       atomic_read(&encl->va_pages_cnt)
+           atomic_read(&encl->va_pages_cnt),
+           encl->flags
        );
 	return(0);
 }
