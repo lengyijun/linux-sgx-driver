@@ -66,6 +66,8 @@
 #else
 	#include <linux/mm.h>
 #endif
+unsigned long sgx_eldu_cnt=0;
+
 int sgx_vm_insert_pfn(struct vm_area_struct *vma, unsigned long addr, resource_size_t pa)
 {
 	int rc;
@@ -229,6 +231,7 @@ int sgx_eldu(struct sgx_encl *encl,
 		sgx_put_page(secs_ptr);
 
 	sgx_put_backing(pcmd, false);
+	sgx_eldu_cnt++;
 
 out:
 	sgx_put_backing(backing, false);

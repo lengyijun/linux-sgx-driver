@@ -90,6 +90,8 @@ static unsigned long sgx_pages_alloced = 0;
 static struct task_struct *ksgxswapd_tsk;
 static DECLARE_WAIT_QUEUE_HEAD(ksgxswapd_waitq);
 
+unsigned long sgx_ewb_cnt=0;
+
 static int sgx_test_and_clear_young_cb(pte_t *ptep,
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 3, 0))
     #if( defined(RHEL_RELEASE_VERSION) && defined(RHEL_RELEASE_CODE))
@@ -322,6 +324,7 @@ static void sgx_evict_page(struct sgx_encl_page *entry,
 	sgx_free_page(entry->epc_page, encl);
 	entry->epc_page = NULL;
 	entry->flags &= ~SGX_ENCL_PAGE_RESERVED;
+	sgx_ewb_cnt++;
 }
 
 static void sgx_write_pages(struct sgx_encl *encl, struct list_head *src)
@@ -598,14 +601,17 @@ void sgx_put_page(void *epc_page_vaddr)
 #ifdef CONFIG_PROC_FS
 int sgx_stats_read(struct seq_file *file, void *v)
 {
-	seq_printf(file, "%u %u %lu %lu %u %u %u\n",
+	seq_printf(file, "%u %u %lu %lu %u %u %u %lu %lu\n",
 		   sgx_encl_created,
 		   sgx_encl_released,
 		   sgx_pages_alloced,
 		   sgx_pages_freed,
 		   sgx_nr_total_epc_pages,
 		   atomic_read(&sgx_va_pages_cnt),
-		   sgx_nr_free_pages);
+		   sgx_nr_free_pages,
+		   sgx_ewb_cnt,
+		   sgx_eldu_cnt
+			   );
 	return(0);
 }
 #endif

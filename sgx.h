@@ -204,6 +204,8 @@ extern u64 sgx_xfrm_mask;
 extern u32 sgx_misc_reserved;
 extern u32 sgx_xsave_size_tbl[64];
 extern bool sgx_has_sgx2;
+extern unsigned long sgx_ewb_cnt;
+extern unsigned long sgx_eldu_cnt;
 
 /* stats */
 extern unsigned int sgx_encl_created;
