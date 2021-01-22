@@ -84,6 +84,7 @@ struct sgx_add_page_req {
 
 unsigned int sgx_encl_created;
 unsigned int sgx_encl_released;
+unsigned long sgx_free_backing_page_cnt=0;
 
 /**
  * sgx_encl_find - find an enclave
@@ -578,7 +579,8 @@ static struct sgx_encl *sgx_encl_alloc(struct sgx_secs *secs)
 	encl->ssaframesize = secs->ssaframesize;
 	encl->backing = backing;
 	encl->pcmd = pcmd;
-  atomic_set(&encl->va_pages_cnt,0);
+	atomic_set(&encl->va_pages_cnt,0);
+	encl->backing_page_cnt=0;
 
 	return encl;
 }
@@ -1032,6 +1034,7 @@ void sgx_encl_release(struct kref *ref)
 	if (encl->pcmd)
 		fput(encl->pcmd);
 
+	sgx_free_backing_page_cnt+=encl->backing_page_cnt;
 	kfree(encl);
 }
 
@@ -1057,14 +1060,15 @@ int sgx_encl_seq_show(struct seq_file *file, void *v)
 {
 	struct sgx_encl *encl= list_entry(v, struct sgx_encl, all_list);
 
-	seq_printf(file, "%d %u %lu %lu %u %d %d\n",
+	seq_printf(file, "%d %u %lu %lu %u %d %d %lu\n",
 		   pid_nr(encl->tgid_ctx->tgid),
 		   encl->id,
 		   encl->size,
 		   encl->eadd_cnt,
 		   encl->secs_child_cnt,
            atomic_read(&encl->va_pages_cnt),
-           encl->flags
+           encl->flags,
+		   encl->backing_page_cnt
        );
 	return(0);
 }

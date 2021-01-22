@@ -325,6 +325,7 @@ static void sgx_evict_page(struct sgx_encl_page *entry,
 	entry->epc_page = NULL;
 	entry->flags &= ~SGX_ENCL_PAGE_RESERVED;
 	sgx_ewb_cnt++;
+	encl->backing_page_cnt++;
 }
 
 static void sgx_write_pages(struct sgx_encl *encl, struct list_head *src)
@@ -601,7 +602,7 @@ void sgx_put_page(void *epc_page_vaddr)
 #ifdef CONFIG_PROC_FS
 int sgx_stats_read(struct seq_file *file, void *v)
 {
-	seq_printf(file, "%u %u %lu %lu %u %u %u %lu %lu\n",
+	seq_printf(file, "%u %u %lu %lu %u %u %u %lu %lu %lu\n",
 		   sgx_encl_created,
 		   sgx_encl_released,
 		   sgx_pages_alloced,
@@ -610,7 +611,8 @@ int sgx_stats_read(struct seq_file *file, void *v)
 		   atomic_read(&sgx_va_pages_cnt),
 		   sgx_nr_free_pages,
 		   sgx_ewb_cnt,
-		   sgx_eldu_cnt
+		   sgx_eldu_cnt,
+		   sgx_free_backing_page_cnt
 			   );
 	return(0);
 }

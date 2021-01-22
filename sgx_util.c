@@ -232,6 +232,7 @@ int sgx_eldu(struct sgx_encl *encl,
 
 	sgx_put_backing(pcmd, false);
 	sgx_eldu_cnt++;
+	encl->backing_page_cnt--;
 
 out:
 	sgx_put_backing(backing, false);

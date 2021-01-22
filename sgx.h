@@ -184,7 +184,8 @@ struct sgx_encl {
 	struct list_head all_list;
 	struct mmu_notifier mmu_notifier;
 	unsigned int shadow_epoch;
-  atomic_t va_pages_cnt;
+	atomic_t va_pages_cnt;
+	unsigned long backing_page_cnt;
 };
 
 struct sgx_epc_bank {
@@ -206,6 +207,7 @@ extern u32 sgx_xsave_size_tbl[64];
 extern bool sgx_has_sgx2;
 extern unsigned long sgx_ewb_cnt;
 extern unsigned long sgx_eldu_cnt;
+extern unsigned long sgx_free_backing_page_cnt;
 
 /* stats */
 extern unsigned int sgx_encl_created;
