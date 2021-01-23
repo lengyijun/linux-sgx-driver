@@ -186,6 +186,7 @@ struct sgx_encl {
 	unsigned int shadow_epoch;
 	atomic_t va_pages_cnt;
 	unsigned long backing_page_cnt;
+	uint64_t start_time;
 };
 
 struct sgx_epc_bank {

@@ -73,6 +73,7 @@
 #include <linux/slab.h>
 #include <linux/hashtable.h>
 #include <linux/shmem_fs.h>
+#include <linux/timekeeping.h>
 
 struct sgx_add_page_req {
 	struct sgx_encl *encl;
@@ -581,6 +582,7 @@ static struct sgx_encl *sgx_encl_alloc(struct sgx_secs *secs)
 	encl->pcmd = pcmd;
 	atomic_set(&encl->va_pages_cnt,0);
 	encl->backing_page_cnt=0;
+	encl->start_time= ktime_get_real_seconds();
 
 	return encl;
 }
@@ -1060,7 +1062,7 @@ int sgx_encl_seq_show(struct seq_file *file, void *v)
 {
 	struct sgx_encl *encl= list_entry(v, struct sgx_encl, all_list);
 
-	seq_printf(file, "%d %u %lu %lu %u %d %d %lu\n",
+	seq_printf(file, "%d %u %lu %lu %u %d %d %lu %llu\n",
 		   pid_nr(encl->tgid_ctx->tgid),
 		   encl->id,
 		   encl->size,
@@ -1068,7 +1070,8 @@ int sgx_encl_seq_show(struct seq_file *file, void *v)
 		   encl->secs_child_cnt,
            atomic_read(&encl->va_pages_cnt),
            encl->flags,
-		   encl->backing_page_cnt
+		   encl->backing_page_cnt,
+		   encl->start_time
        );
 	return(0);
 }
